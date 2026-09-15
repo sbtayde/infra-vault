@@ -1,0 +1,26 @@
+Path: /etc/nginx/conf.d/web1.conf
+
+
+server {
+    listen 8080;
+
+    root /var/www/web1;
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+}
+
+
+Path: /etc/nginx/conf.d/web2.conf
+server {
+    listen 8081;
+
+    root /var/www/web2;
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+}
