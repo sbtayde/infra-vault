@@ -1,0 +1,69 @@
+#!/bin/bash
+
+dnf update -y
+
+
+# Install required software
+
+dnf install -y git nodejs npm nginx
+
+
+# Start Nginx
+
+systemctl enable nginx
+
+systemctl start nginx
+
+
+# Clone React/Vite application
+
+cd /tmp
+
+git clone https://github.com/username/repo-name
+
+
+# Build React application
+
+cd /tmp/react-app
+
+npm install
+
+npm run build
+
+
+# Configure Nginx
+
+cat > /etc/nginx/conf.d/react.conf <<'EOF'
+server {
+    listen 80;
+    server_name _;
+
+    root /usr/share/nginx/html;
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+}
+EOF
+
+
+# Deploy production build
+
+rm -rf /usr/share/nginx/html/*
+
+cp -r dist/* /usr/share/nginx/html/
+
+
+# Permissions
+
+chown -R nginx:nginx /usr/share/nginx/html
+
+chmod -R 755 /usr/share/nginx/html
+
+
+# Validate and restart Nginx
+
+nginx -t
+
+systemctl restart nginx
