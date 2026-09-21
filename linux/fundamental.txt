@@ -1,0 +1,906 @@
+#!/bin/bash
+
+# ============================================================
+# Linux Master Lab
+# Amazon Linux 2023
+# Lightweight / t3.micro friendly
+# ============================================================
+
+set -e
+
+LAB_ROOT="/opt/linux-lab"
+MODULES="$LAB_ROOT/modules"
+
+echo "=========================================="
+echo " Linux Master Lab - Initializing"
+echo "=========================================="
+
+# ------------------------------------------------------------
+# 1. Install only lightweight tools
+# ------------------------------------------------------------
+
+dnf install -y \
+    tree \
+    vim-enhanced \
+    nano \
+    tar \
+    gzip \
+    unzip \
+    zip
+
+# ------------------------------------------------------------
+# 2. Create lab directories
+# ------------------------------------------------------------
+
+mkdir -p "$MODULES"
+mkdir -p /usr/local/bin
+
+# ------------------------------------------------------------
+# 3. Create Linux Lab command
+# ------------------------------------------------------------
+
+cat > /usr/local/bin/linux-lab <<'LABCOMMAND'
+#!/bin/bash
+
+LAB_ROOT="/opt/linux-lab"
+MODULES="$LAB_ROOT/modules"
+FUNDAMENTALS="$MODULES/fundamentals"
+
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+RED='\033[0;31m'
+BLUE='\033[0;34m'
+NC='\033[0m'
+
+show_usage() {
+
+    echo
+    echo "=========================================="
+    echo "        LINUX MASTER LAB"
+    echo "=========================================="
+    echo
+    echo "Usage:"
+    echo
+    echo "  linux-lab list"
+    echo "  linux-lab start fundamentals"
+    echo "  linux-lab status"
+    echo "  linux-lab check fundamentals"
+    echo "  linux-lab clean fundamentals"
+    echo
+}
+
+# ============================================================
+# LIST MODULES
+# ============================================================
+
+list_modules() {
+
+    echo
+    echo "Available Modules"
+    echo "-----------------"
+    echo
+    echo "  01  fundamentals"
+    echo
+}
+
+# ============================================================
+# CREATE FUNDAMENTALS MODULE
+# ============================================================
+
+start_fundamentals() {
+
+    if [ -d "$FUNDAMENTALS" ]; then
+
+        echo
+        echo -e "${YELLOW}Fundamentals module is already active.${NC}"
+        echo
+        echo "Location:"
+        echo "$FUNDAMENTALS"
+        echo
+
+        return
+    fi
+
+    echo
+    echo -e "${BLUE}Starting Linux Fundamentals module...${NC}"
+    echo
+
+    # --------------------------------------------------------
+    # Directory structure
+    # --------------------------------------------------------
+
+    mkdir -p "$FUNDAMENTALS/workspace/projects/webapp"
+    mkdir -p "$FUNDAMENTALS/workspace/projects/api"
+    mkdir -p "$FUNDAMENTALS/workspace/documents"
+    mkdir -p "$FUNDAMENTALS/workspace/backups"
+    mkdir -p "$FUNDAMENTALS/workspace/temporary"
+
+    mkdir -p "$FUNDAMENTALS/data"
+    mkdir -p "$FUNDAMENTALS/exercises"
+
+    # --------------------------------------------------------
+    # Sample data
+    # --------------------------------------------------------
+
+    cat > "$FUNDAMENTALS/data/employees.txt" <<EOF
+101 Rahul Developer
+102 Priya Tester
+103 Amit DevOps
+104 Neha Developer
+105 Rohit Administrator
+106 Sneha Database
+107 Akash DevOps
+EOF
+
+    cat > "$FUNDAMENTALS/data/products.csv" <<EOF
+id,name,category,price
+1,Laptop,Electronics,55000
+2,Mouse,Electronics,800
+3,Chair,Furniture,4500
+4,Desk,Furniture,7000
+5,Keyboard,Electronics,1500
+6,Monitor,Electronics,12000
+EOF
+
+    cat > "$FUNDAMENTALS/data/servers.txt" <<EOF
+web-server-01
+web-server-02
+database-server-01
+backup-server-01
+monitoring-server-01
+api-server-01
+EOF
+
+    cat > "$FUNDAMENTALS/data/application.log" <<EOF
+INFO Application started
+INFO User login successful
+WARNING High memory usage
+INFO Database connection established
+ERROR Database connection timeout
+INFO Request completed
+ERROR Unable to connect to API
+INFO Application shutdown
+EOF
+
+    # --------------------------------------------------------
+    # Sample application files
+    # --------------------------------------------------------
+
+    cat > "$FUNDAMENTALS/workspace/projects/webapp/index.html" <<EOF
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Linux Master Lab</title>
+</head>
+<body>
+    <h1>Linux Fundamentals Lab</h1>
+</body>
+</html>
+EOF
+
+    cat > "$FUNDAMENTALS/workspace/projects/webapp/config.conf" <<EOF
+APP_NAME=LinuxLab
+APP_ENV=training
+APP_PORT=8080
+EOF
+
+    cat > "$FUNDAMENTALS/workspace/projects/api/app.py" <<EOF
+print("Linux Master Lab API")
+EOF
+
+    cat > "$FUNDAMENTALS/workspace/documents/readme.txt" <<EOF
+Linux Master Lab
+
+Module: Fundamentals
+
+Practice Linux commands using this environment.
+EOF
+
+    # --------------------------------------------------------
+    # Exercise file
+    # --------------------------------------------------------
+
+    cat > "$FUNDAMENTALS/exercises/tasks.md" <<'EOF'
+============================================================
+        LINUX MASTER LAB - MODULE 01
+             LINUX FUNDAMENTALS
+============================================================
+
+RULE:
+
+Do not search for the command first.
+
+Read the task.
+Think about which Linux command solves the problem.
+Then execute it.
+
+------------------------------------------------------------
+SECTION 1 — NAVIGATION
+------------------------------------------------------------
+
+TASK 01
+Find your current working directory.
+
+TASK 02
+Navigate to:
+
+workspace/projects/webapp
+
+TASK 03
+Return to the fundamentals directory.
+
+TASK 04
+Navigate to the documents directory using an absolute path.
+
+TASK 05
+Return to your home directory.
+
+------------------------------------------------------------
+SECTION 2 — DIRECTORY OPERATIONS
+------------------------------------------------------------
+
+TASK 06
+Inside:
+
+workspace/projects/webapp
+
+create a directory named:
+
+deployments
+
+TASK 07
+Inside deployments create:
+
+development
+testing
+production
+
+TASK 08
+Create another directory:
+
+workspace/archive
+
+TASK 09
+Create nested directories:
+
+workspace/archive/2026/linux
+
+Do this using a single command.
+
+------------------------------------------------------------
+SECTION 3 — FILE CREATION
+------------------------------------------------------------
+
+TASK 10
+Inside:
+
+deployments/production
+
+create:
+
+v1.txt
+v2.txt
+v3.txt
+
+TASK 11
+Put some meaningful text inside each file.
+
+TASK 12
+Create:
+
+deployment.log
+
+inside:
+
+deployments
+
+------------------------------------------------------------
+SECTION 4 — FILE INSPECTION
+------------------------------------------------------------
+
+TASK 13
+Display the contents of employees.txt.
+
+TASK 14
+Display only the first few lines of application.log.
+
+TASK 15
+Display only the last few lines of application.log.
+
+TASK 16
+Determine the type of:
+
+products.csv
+
+TASK 17
+Display detailed metadata of:
+
+employees.txt
+
+------------------------------------------------------------
+SECTION 5 — COPY
+------------------------------------------------------------
+
+TASK 18
+Copy:
+
+v1.txt
+
+into:
+
+workspace/backups
+
+TASK 19
+Copy the entire:
+
+webapp
+
+directory into:
+
+workspace/backups
+
+------------------------------------------------------------
+SECTION 6 — MOVE / RENAME
+------------------------------------------------------------
+
+TASK 20
+Rename:
+
+v2.txt
+
+to:
+
+release.txt
+
+TASK 21
+Move:
+
+v3.txt
+
+into:
+
+workspace/temporary
+
+------------------------------------------------------------
+SECTION 7 — REMOVE
+------------------------------------------------------------
+
+TASK 22
+Create a temporary file:
+
+test.tmp
+
+Then remove it.
+
+TASK 23
+Create a directory:
+
+temporary-test
+
+Then remove it.
+
+------------------------------------------------------------
+SECTION 8 — FIND
+------------------------------------------------------------
+
+TASK 24
+Find every .txt file inside the fundamentals module.
+
+TASK 25
+Find every .log file.
+
+TASK 26
+Find application.log without directly specifying its
+full path.
+
+TASK 27
+Find every .conf file.
+
+TASK 28
+Find all files larger than 1 KB.
+
+------------------------------------------------------------
+SECTION 9 — WILDCARDS
+------------------------------------------------------------
+
+TASK 29
+List all .txt files inside data.
+
+TASK 30
+List all files beginning with "app".
+
+TASK 31
+List all files ending with ".conf".
+
+------------------------------------------------------------
+SECTION 10 — GREP
+------------------------------------------------------------
+
+TASK 32
+Search employees.txt for:
+
+DevOps
+
+TASK 33
+Search application.log for:
+
+ERROR
+
+TASK 34
+Search application.log for ERROR without caring about
+uppercase/lowercase.
+
+TASK 35
+Search every file inside data for the word:
+
+server
+
+------------------------------------------------------------
+SECTION 11 — SYMBOLIC LINKS
+------------------------------------------------------------
+
+TASK 36
+Create a symbolic link named:
+
+release-link
+
+inside:
+
+workspace/projects/webapp
+
+The link should point to:
+
+deployments/production/release.txt
+
+TASK 37
+Verify that the symbolic link points to the correct file.
+
+------------------------------------------------------------
+SECTION 12 — TAR ARCHIVES
+------------------------------------------------------------
+
+TASK 38
+Create an archive of the webapp directory.
+
+Save it inside:
+
+workspace/backups
+
+TASK 39
+Create a gzip-compressed tar archive of webapp.
+
+TASK 40
+Create a new directory:
+
+workspace/extracted
+
+Extract your compressed archive there.
+
+------------------------------------------------------------
+SECTION 13 — COMBINED CHALLENGES
+------------------------------------------------------------
+
+TASK 41
+Without using cd, copy:
+
+data/application.log
+
+into:
+
+workspace/backups
+
+TASK 42
+Find every file containing the word:
+
+server
+
+TASK 43
+Find all .txt files and count how many exist.
+
+TASK 44
+Find all files under fundamentals whose names contain
+the word "app".
+
+TASK 45
+Create a backup directory and copy all CSV files into it.
+
+------------------------------------------------------------
+FINAL CHALLENGE
+------------------------------------------------------------
+
+You are given this requirement:
+
+"Create a backup of all important application files."
+
+Important application files are:
+
+index.html
+config.conf
+app.py
+
+Create:
+
+workspace/backups/application-backup
+
+and place copies of those three files inside it.
+
+Do not modify the original files.
+
+============================================================
+END OF MODULE 01
+============================================================
+EOF
+
+    # --------------------------------------------------------
+    # README
+    # --------------------------------------------------------
+
+    cat > "$FUNDAMENTALS/README.md" <<EOF
+============================================================
+LINUX MASTER LAB
+MODULE 01 - LINUX FUNDAMENTALS
+============================================================
+
+Practice location:
+
+$FUNDAMENTALS
+
+Start:
+
+cd $FUNDAMENTALS
+
+Read:
+
+cat exercises/tasks.md
+
+Useful command:
+
+tree
+
+Example:
+
+tree .
+
+After completing the exercises:
+
+linux-lab check fundamentals
+
+When completely finished:
+
+linux-lab clean fundamentals
+
+============================================================
+IMPORTANT
+============================================================
+
+This module is isolated under:
+
+$FUNDAMENTALS
+
+Do not modify files outside this directory while practicing.
+EOF
+
+    echo
+    echo -e "${GREEN}[✓] Fundamentals module started.${NC}"
+    echo
+    echo "Practice directory:"
+    echo "$FUNDAMENTALS"
+    echo
+    echo "Start practicing:"
+    echo
+    echo "  cd $FUNDAMENTALS"
+    echo "  cat exercises/tasks.md"
+    echo
+}
+
+# ============================================================
+# STATUS
+# ============================================================
+
+status() {
+
+    echo
+    echo "=========================================="
+    echo "        LINUX MASTER LAB STATUS"
+    echo "=========================================="
+    echo
+
+    if [ -d "$FUNDAMENTALS" ]; then
+
+        echo -e "Fundamentals : ${GREEN}ACTIVE${NC}"
+
+        echo
+        echo "Location:"
+        echo "$FUNDAMENTALS"
+
+        echo
+        echo "Files:"
+        find "$FUNDAMENTALS" -type f | wc -l
+
+        echo "Directories:"
+        find "$FUNDAMENTALS" -type d | wc -l
+
+    else
+
+        echo "Fundamentals : NOT ACTIVE"
+    fi
+
+    echo
+}
+
+# ============================================================
+# CHECK FUNDAMENTALS
+# ============================================================
+
+check_fundamentals() {
+
+    if [ ! -d "$FUNDAMENTALS" ]; then
+
+        echo
+        echo -e "${RED}Fundamentals module is not active.${NC}"
+        echo
+
+        return 1
+    fi
+
+    echo
+    echo "=========================================="
+    echo "      FUNDAMENTALS PROGRESS CHECK"
+    echo "=========================================="
+    echo
+
+    PASS=0
+    TOTAL=8
+
+    # 1
+    if [ -d "$FUNDAMENTALS/workspace/projects/webapp/deployments" ]; then
+        echo -e "${GREEN}[✓]${NC} deployments directory"
+        ((PASS++))
+    else
+        echo "[ ] deployments directory"
+    fi
+
+    # 2
+    if [ -d "$FUNDAMENTALS/workspace/projects/webapp/deployments/production" ]; then
+        echo -e "${GREEN}[✓]${NC} production directory"
+        ((PASS++))
+    else
+        echo "[ ] production directory"
+    fi
+
+    # 3
+    if [ -f "$FUNDAMENTALS/workspace/projects/webapp/deployments/production/release.txt" ]; then
+        echo -e "${GREEN}[✓]${NC} release.txt created/renamed"
+        ((PASS++))
+    else
+        echo "[ ] release.txt"
+    fi
+
+    # 4
+    if [ -f "$FUNDAMENTALS/workspace/backups/v1.txt" ]; then
+        echo -e "${GREEN}[✓]${NC} v1.txt backup"
+        ((PASS++))
+    else
+        echo "[ ] v1.txt backup"
+    fi
+
+    # 5
+    if [ -f "$FUNDAMENTALS/workspace/temporary/v3.txt" ]; then
+        echo -e "${GREEN}[✓]${NC} v3.txt moved"
+        ((PASS++))
+    else
+        echo "[ ] v3.txt movement"
+    fi
+
+    # 6
+    if [ -L "$FUNDAMENTALS/workspace/projects/webapp/release-link" ]; then
+        echo -e "${GREEN}[✓]${NC} symbolic link"
+        ((PASS++))
+    else
+        echo "[ ] symbolic link"
+    fi
+
+    # 7
+    if [ -f "$FUNDAMENTALS/workspace/backups/webapp.tar" ] || \
+       [ -f "$FUNDAMENTALS/workspace/backups/webapp.tar.gz" ]; then
+        echo -e "${GREEN}[✓]${NC} webapp archive"
+        ((PASS++))
+    else
+        echo "[ ] webapp archive"
+    fi
+
+    # 8
+    if [ -d "$FUNDAMENTALS/workspace/extracted" ]; then
+        echo -e "${GREEN}[✓]${NC} archive extraction directory"
+        ((PASS++))
+    else
+        echo "[ ] archive extraction"
+    fi
+
+    echo
+    echo "Progress: $PASS/$TOTAL"
+    echo
+
+    if [ "$PASS" -eq "$TOTAL" ]; then
+        echo -e "${GREEN}MODULE CHECK: PASSED${NC}"
+        echo
+        echo "You can move to the next module."
+    else
+        echo -e "${YELLOW}MODULE CHECK: INCOMPLETE${NC}"
+        echo
+        echo "Continue practicing the failed tasks."
+    fi
+
+    echo
+}
+
+# ============================================================
+# CLEAN FUNDAMENTALS
+# ============================================================
+
+clean_fundamentals() {
+
+    if [ ! -d "$FUNDAMENTALS" ]; then
+
+        echo
+        echo "Fundamentals module is not active."
+        echo
+
+        return
+    fi
+
+    echo
+    echo -e "${YELLOW}Cleaning Fundamentals module...${NC}"
+    echo
+
+    rm -rf "$FUNDAMENTALS"
+
+    echo -e "${GREEN}[✓] Fundamentals module removed.${NC}"
+    echo
+    echo "The EC2 instance is ready for the next module."
+    echo
+}
+
+# ============================================================
+# COMMAND ROUTER
+# ============================================================
+
+case "$1" in
+
+    list)
+        list_modules
+        ;;
+
+    start)
+
+        case "$2" in
+
+            fundamentals)
+                start_fundamentals
+                ;;
+
+            *)
+                echo
+                echo "Unknown module: $2"
+                echo
+                ;;
+
+        esac
+
+        ;;
+
+    status)
+        status
+        ;;
+
+    check)
+
+        case "$2" in
+
+            fundamentals)
+                check_fundamentals
+                ;;
+
+            *)
+                echo
+                echo "Unknown module: $2"
+                echo
+                ;;
+
+        esac
+
+        ;;
+
+    clean)
+
+        case "$2" in
+
+            fundamentals)
+                clean_fundamentals
+                ;;
+
+            *)
+                echo
+                echo "Unknown module: $2"
+                echo
+                ;;
+
+        esac
+
+        ;;
+
+    *)
+        show_usage
+        ;;
+
+esac
+
+LABCOMMAND
+
+chmod +x /usr/local/bin/linux-lab
+
+# ------------------------------------------------------------
+# 4. Create initial README
+# ------------------------------------------------------------
+
+cat > "$LAB_ROOT/README.md" <<'EOF'
+============================================================
+LINUX MASTER LAB
+============================================================
+
+This EC2 instance contains the Linux Master Lab.
+
+Available commands:
+
+    linux-lab list
+
+    linux-lab start fundamentals
+
+    linux-lab status
+
+    linux-lab check fundamentals
+
+    linux-lab clean fundamentals
+
+
+Learning model:
+
+    START
+      ↓
+    PRACTICE
+      ↓
+    CHECK
+      ↓
+    CLEAN
+      ↓
+    NEXT MODULE
+
+Only the active module creates practice resources.
+
+This keeps the EC2 lightweight.
+EOF
+
+# ------------------------------------------------------------
+# 5. Installation marker
+# ------------------------------------------------------------
+
+cat > "$LAB_ROOT/.installed" <<EOF
+Linux Master Lab installed.
+Installed: $(date)
+OS: Amazon Linux 2023
+EOF
+
+echo
+echo "=========================================="
+echo " Linux Master Lab READY"
+echo "=========================================="
+echo
+echo "SSH into the instance and run:"
+echo
+echo "    linux-lab list"
+echo
+echo "Then:"
+echo
+echo "    linux-lab start fundamentals"
+echo
+echo "=========================================="
