@@ -1,0 +1,9 @@
+- Launch a Linux ec2 instance.
+- Create an additional volume in the same region and Availability zone using AWS console where your ec2 instance is launched.
+- Attach it to the ec2 instance.
+- SSH into your ec2 instance
+- type "lsblk" command to see the volumes and mount point
+- type "sudo mkfs -t xfs /dev/nvme1n1" to create filesystem
+- type "sudo mkdir -p /data" to create mount directory
+- type "sudo mount /dev/nvme1n1 /data" to mount the filesystem
+- type "df -hT /data" to verify the mount
