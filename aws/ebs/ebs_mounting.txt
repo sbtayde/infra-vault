@@ -7,3 +7,19 @@
 - type "sudo mkdir -p /data" to create mount directory
 - type "sudo mount /dev/nvme1n1 /data" to mount the filesystem
 - type "df -hT /data" to verify the mount
+
+To make EBS filesystem persistent you have to configure /etc/fstab using the filesystem UUID.
+
+- type "sudo blkid" to identify the filesystem UUID
+- or you can type "sudo blkid /dev/nvme0n1" to find specific volume's filesystem UUID
+- copy the filesystem UUID
+- type "sudo vi /etc/fstab" to open editor 
+- paste this line "UUID=YOUR-FILESYSTEM-UUID /data xfs defaults,nofail 0 2" and exit the vi using esc with :wq 
+	- UUID=--your UUID--
+	- /data : directory where it will be mounted
+	- sfs : filesystem type
+	- defaults,nofail: Standard mount options; allow boot to continue if the volume is unavailable
+	- 0 : Disable the legacy dump backup flag
+	- 2 : Filesystem-check order; actual behavior depends on filesystem type and system configuration
+
+- type "sudo findmnt --verify --verbose" to test the configuration
