@@ -8,12 +8,31 @@
 - type "sudo mount /dev/nvme1n1 /data" to mount the filesystem
 - type "df -hT /data" to verify the mount
 
+Make mounting Permanent/automatic:
+
+-What is /etc/fstab?
+ /etc/fstab stands for Filesystem Table.
+
+It is a Linux configuration file that contains information about filesystems that should be mounted automatically.
+
+It tells Linux:
+- Which storage device to mount.
+- Where to mount it.
+- Which filesystem type to use.
+- Which mounting options to apply.
+- Whether the filesystem should be checked during boot.
+
+
 To make EBS filesystem persistent you have to configure /etc/fstab using the filesystem UUID.
 
 - type "sudo blkid" to identify the filesystem UUID
+
 - or you can type "sudo blkid /dev/nvme0n1" to find specific volume's filesystem UUID
+
 - copy the filesystem UUID
+
 - type "sudo vi /etc/fstab" to open editor 
+
 - paste this line "UUID=YOUR-FILESYSTEM-UUID /data xfs defaults,nofail 0 2" and exit the vi using esc with :wq 
 	- UUID=--your UUID--
 	- /data : directory where it will be mounted
